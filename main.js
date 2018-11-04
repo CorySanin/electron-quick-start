@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow} = require('electron')
+const {app, BrowserWindow, ipcMain} = require('electron')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -7,7 +7,7 @@ let mainWindow
 
 function createWindow () {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 800, height: 600})
+  mainWindow = new BrowserWindow({width: 800, height: 600, resizable: false})
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
@@ -44,6 +44,14 @@ app.on('activate', function () {
   if (mainWindow === null) {
     createWindow()
   }
+})
+
+ipcMain.on('resize', function (event, args) {
+  let dim = mainWindow.getSize()
+  let width = ('width' in args)?args.width:dim[0]
+  let height = ('height' in args)?args.height:dim[1]
+  console.log("mainWindow.setSize("+width+", "+height+", true)");
+  mainWindow.setSize(width, height, true)
 })
 
 // In this file you can include the rest of your app's specific main process
